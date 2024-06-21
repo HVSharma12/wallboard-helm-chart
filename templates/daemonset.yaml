@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.daemonset.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      name: {{ .Values.daemonset.labels.name }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.daemonset.labels.name }}
+    spec:
+      initContainers:
+        - name: x11
+          image: {{ .Values.daemonset.images.x11 }}
+          imagePullPolicy: {{ .Values.daemonset.imagePullPolicy }}
+          restartPolicy: Always
+          securityContext:
+            privileged: true
+            readOnlyRootFilesystem: false
+          volumeMounts:
+            - mountPath: /tmp/.X11-unix/
+              name: xsocket
+            - mountPath: /home/user/xauthority/
+              name: xauthority
+            - mountPath: /run/udev/data/
+              name: udev-data
+          {{- if .Values.daemonset.optionalVolume.enabled }}
+            - mountPath: {{ .Values.daemonset.optionalVolume.mountPath }}
+              name: optional-volume
+              readOnly: true
+          {{- end }}
+        - name: audio
+          image: {{ .Values.daemonset.images.audio }}
+          command: ["pulseaudio"]
+          imagePullPolicy: {{ .Values.daemonset.imagePullPolicy }}
+          restartPolicy: Always
+          securityContext:
+            privileged: true
+            readOnlyRootFilesystem: false
+          volumeMounts:
+            - mountPath: /tmp/.X11-unix/
+              name: xsocket
+            - mountPath: /home/user/xauthority/
+              name: xauthority
+            - mountPath: /run/udev/data/
+              name: udev-data
+          env:
+            - name: DISPLAY
+              value: ':0'
+            - name: XAUTHORITY
+              value: /home/user/xauthority/.xauth
+      containers:
+        - name: wallboard
+          env:
+            - name: URL
+              value: {{ .Values.daemonset.url }}
+            - name: DISPLAY
+              value: ':0'
+            - name: XAUTHORITY
+              value: /home/user/xauthority/.xauth
+            - name: PULSE_SERVER
+              value: 127.0.0.1
+          image: {{ .Values.daemonset.images.wallboard }}
+          imagePullPolicy: {{ .Values.daemonset.imagePullPolicy }}
+          securityContext:
+            runAsUser: {{ .Values.daemonset.runAsUser }}
+          volumeMounts:
+            - mountPath: /tmp/.X11-unix/
+              name: xsocket
+            - mountPath: /home/user/xauthority/
+              name: xauthority
+            - mountPath: /home/user/.config/pulse/
+              name: pa-client
+      dnsPolicy: ClusterFirst
+      terminationGracePeriodSeconds: 5
+      volumes:
+        - name: xauthority
+          emptyDir: {}
+        - name: xsocket
+          emptyDir: {}
+        - name: paconfig
+          emptyDir: {}
+        - name: udev-data
+          hostPath:
+            path: /run/udev/data/
+            type: Directory
+        - name: pa-client
+          configMap: 
+            name: pa-config
+            items: 
+            - key: "client.conf"
+              path: "client.conf"
+        {{- if .Values.daemonset.optionalVolume.enabled }}
+        - name: optional-volume
+          hostPath:
+            path: {{ .Values.daemonset.optionalVolume.hostPath }}
+            type: File
+        {{- end }}
+

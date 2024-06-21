@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pa-config
+  namespace: {{ .Values.namespace }}
+data:
+  client.conf: |+
+{{ .Values.config.clientConf | indent 4 }}
+

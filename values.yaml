@@ -1,0 +1,20 @@
+namespace: wallboard
+config:
+  clientConf: |
+    autospawn = no
+    auto-connect-localhost = yes
+daemonset:
+  name: wallboard
+  labels:
+    name: test-wallboard
+  url: https://google.com
+  images:
+    x11: registry.opensuse.org/home/atgracey/wallboardos/15.5/x11:notaskbar
+    audio: registry.opensuse.org/home/atgracey/wallboardos/15.5/pa:latest
+    wallboard: registry.opensuse.org/home/atgracey/wallboardos/15.5/firefox:latest
+  imagePullPolicy: Always
+  runAsUser: 1000
+  optionalVolume:
+    enabled: false
+    hostPath: ""
+    mountPath: /usr/share/wallpapers/openSUSEdefault/contents/images/1920x1080.jpg
