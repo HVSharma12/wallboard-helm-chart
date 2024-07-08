@@ -13,35 +13,35 @@ This Helm chart is used to deploy the Wallboard application as a DaemonSet on a 
 
 To install the chart with the release name `wallboard`:
 
-\`\`\`sh
+```bash
 helm install wallboard ./wallboard-chart
-\`\`\`
+```
 
 ### Customizing the Deployment
 
 #### To change the wallpaper:
 
-\`\`\`sh
+```bash
 helm install wallboard ./wallboard-chart \
   --set daemonset.optionalVolume.enabled=true \
   --set daemonset.optionalVolume.hostPath=/path/to/your/wallpaper.jpg \
-\`\`\`
+```
 
 #### To disable VNC:
 
-\`\`\`sh
+```bash
 helm install wallboard ./wallboard-chart \
   --set vnc.enabled=false
-\`\`\`
+```
 
 
 ## Uninstalling the Chart
 
 To uninstall/delete the `wallboard` deployment:
 
-\`\`\`sh
+```bash
 helm uninstall wallboard
-\`\`\`
+```
 
 ## Configuration
 
@@ -66,13 +66,13 @@ The following table lists the configurable parameters of the Wallboard chart and
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
-\`\`\`sh
+```bash
 helm install wallboard ./wallboard-chart --set daemonset.runAsUser=1001
-\`\`\`
+```
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
-\`\`\`sh
+```bash
 helm install wallboard ./wallboard-chart -f values.yaml
-\`\`\`
+```
 
