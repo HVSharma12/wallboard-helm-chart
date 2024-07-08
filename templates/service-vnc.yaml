@@ -1,0 +1,16 @@
+{{- if .Values.vnc.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallboard-vnc
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - name: vnc
+      port: 5900
+      protocol: TCP
+      targetPort: 5900
+  selector:
+    name: {{ .Values.daemonset.labels.name }}
+  type: LoadBalancer
+{{- end }}

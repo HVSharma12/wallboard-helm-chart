@@ -1,8 +1,8 @@
 namespace: wallboard
-config:
-  clientConf: |
-    autospawn = no
-    auto-connect-localhost = yes
+
+vnc:
+  enabled: true
+
 daemonset:
   name: wallboard
   labels:
@@ -11,7 +11,8 @@ daemonset:
   images:
     x11: registry.opensuse.org/home/atgracey/wallboardos/15.5/x11:notaskbar
     audio: registry.opensuse.org/home/atgracey/wallboardos/15.5/pa:latest
-    wallboard: registry.opensuse.org/home/atgracey/wallboardos/15.5/firefox:latest
+    wallboard: docker.io/atgracey/kiosk-test:latest
+    vnc: registry.opensuse.org/home/atgracey/wallboardos/15.5/vnc:vnc
   imagePullPolicy: Always
   runAsUser: 1000
   optionalVolume:
